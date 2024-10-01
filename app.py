@@ -1,14 +1,18 @@
 from flask import Flask, render_template, request, jsonify
 import whisper
+import ssl
+import urllib.request
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 app = Flask(__name__)
-model = whisper.load_model("base")
+model = whisper.load_model("base", device="GPU")
 
 @app.route('/')
 def index():
-    render_template('index.html')
+    return render_template('index.html')
 
-@app.route('transcribe', methods=['POST'])
+@app.route('/transcribe', methods=['POST'])
 def transcribe():
     if 'audio' not in request.files:
         return jsonify({'error': 'No audio file provided'}), 400
